@@ -1,0 +1,15 @@
+# Node modules (if backend used)
+node_modules/
+
+# Firebase credentials
+firebaseConfig.js
+
+# Environment files
+.env
+.env.local
+
+# OS / IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

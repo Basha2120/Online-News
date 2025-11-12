@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Online Newspaper Delivery System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="module">
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+    import firebaseConfig from './firebaseConfig.js';
+
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let userData = null;
+
+    // Hide content until auth state is known
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelector('.modal-content').style.display = 'none';
+      document.querySelector('.auth-buttons').style.display = 'none';
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = 'index.html';
+        return;
+      }
+      currentUser = user;
+      document.querySelector('.modal-content').style.display = 'block';
+      document.querySelector('.auth-buttons').style.display = 'block';
+      document.getElementById('signOut').style.display = 'block';
+      const docSnap = await getDoc(doc(db, "users", user.uid));
+      if (docSnap.exists()) {
+        userData = docSnap.data();
+        document.getElementById('profileName').innerText = `${userData.firstName} ${userData.lastName}`;
+        document.getElementById('profileEmail').innerText = userData.email;
+        if (userData.subscription) {
+          document.getElementById('profileSubscription').innerText = `Newspaper: ${userData.subscription.newspaper}\nPlan: ${userData.subscription.plan}`;
+        } else {
+          document.getElementById('profileSubscription').innerText = 'No subscription yet.';
+        }
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('signOut').addEventListener('click', () => {
+        signOut(auth).then(() => {
+          window.location.href = 'index.html';
+        });
+      });
+    });
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="title">Online Newspaper Delivery System</div>
+        <div class="auth-buttons">
+            <div class="button-container">
+                <button id="signOut" class="auth-button" style="display: none;">Sign Out</button>
+            </div>
+        </div>
+    </header>
+    <nav class="navigation">
+        <a href="index.html" id="homeLink">Home</a>
+        <a href="profile.html" id="profileLink">Profile</a>
+        <a href="subscription.html" id="subscriptionLink">Subscription</a>
+    </nav>
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 60vh;">
+      <div class="modal-content" style="max-width: 400px; width: 100%;">
+        <div class="profile-avatar" style="margin: 0 auto 1rem auto; width: 80px; height: 80px; border-radius: 50%; background: #8aaee0; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #fff;">
+          <i class="fa fa-user"></i>
+        </div>
+        <div class="profile-info" style="text-align: center;">
+          <h3 id="profileName">Loading...</h3>
+          <p id="profileEmail"></p>
+          <p id="profileSubscription"></p>
+        </div>
+      </div>
+    </div>
+    <footer class="footer">
+        <p>&copy; 2024 Online Newspaper Delivery System. All rights reserved.</p>
+        <p><b>Contact us at: support@newspaperdelivery.com</b></p>
+    </footer>
+</body>
+</html> 

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription - Online Newspaper Delivery System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="module">
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+    import firebaseConfig from './firebaseConfig.js';
+
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let userData = null;
+
+    function showSubscriptionInfo() {
+      if (userData && userData.subscription) {
+        document.getElementById('subscriptionInfo').innerText = `Newspaper: ${userData.subscription.newspaper}\nPlan: ${userData.subscription.plan}`;
+        document.getElementById('subscriptionInfo').style.display = 'block';
+      } else {
+        document.getElementById('subscriptionInfo').innerText = 'No subscription yet.';
+        document.getElementById('subscriptionInfo').style.display = 'block';
+      }
+    }
+
+    // Hide content until auth state is known
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelector('.modal-content').style.display = 'none';
+      document.querySelector('.auth-buttons').style.display = 'none';
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = 'index.html';
+        return;
+      }
+      currentUser = user;
+      document.querySelector('.modal-content').style.display = 'block';
+      document.querySelector('.auth-buttons').style.display = 'block';
+      document.getElementById('signOut').style.display = 'block';
+      const docSnap = await getDoc(doc(db, "users", user.uid));
+      if (docSnap.exists()) {
+        userData = docSnap.data();
+        showSubscriptionInfo();
+      }
+      document.getElementById('subscriptionForm').style.display = 'block';
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('signOut').addEventListener('click', () => {
+        signOut(auth).then(() => {
+          window.location.href = 'index.html';
+        });
+      });
+      document.getElementById('subscriptionForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        // Show payment form after subscription selection
+        document.getElementById('subscriptionForm').style.display = 'none';
+        document.getElementById('paymentForm').style.display = 'block';
+      });
+      document.getElementById('paymentMethod').addEventListener('change', (event) => {
+        const paymentMethod = event.target.value;
+        const paymentDetails = document.getElementById('paymentDetails');
+        paymentDetails.innerHTML = '';
+        if (paymentMethod === 'UPI') {
+          paymentDetails.innerHTML = `
+            <input type='text' id='upiId' required placeholder='UPI ID' style='width: 86%; margin-right:50%; display: block; box-sizing: border-box; text-align: center;'>
+          `;
+        } else if (paymentMethod === 'Card') {
+          paymentDetails.innerHTML = `
+            <input type='text' id='cardNumber' required placeholder='Card Number' style='width: 86%; margin-right:50%;; display: block; box-sizing: border-box; text-align: center;'>
+            <input type='text' id='expiryDate' required placeholder='Expiry Date (MM/YY)' style='width: 86%; margin-right:50%; display: block; box-sizing: border-box; text-align: center;'>
+            <input type='text' id='cvv' required placeholder='CVV'  style='width: 86%; margin-right:50%; display: block; box-sizing: border-box; text-align: center;'>
+          `;
+        }
+      });
+      document.getElementById('paymentForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        // Optionally validate payment info here
+        // Update subscription in Firestore
+        const newspaper = document.getElementById('newspaper').value;
+        const plan = document.getElementById('plan').value;
+        await setDoc(doc(db, "users", currentUser.uid), {
+          ...userData,
+          subscription: { newspaper, plan }
+        }, { merge: true });
+        userData.subscription = { newspaper, plan };
+        showSubscriptionInfo();
+        document.getElementById('subscriptionMessage').innerText = 'Subscription updated successfully!';
+        document.getElementById('subscriptionMessage').style.display = 'block';
+        document.getElementById('paymentForm').style.display = 'none';
+        document.getElementById('subscriptionForm').style.display = 'block';
+      });
+    });
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="title">Online Newspaper Delivery System</div>
+        <div class="auth-buttons">
+            <div class="button-container">
+                <button id="signOut" class="auth-button" style="display: none;">Sign Out</button>
+            </div>
+        </div>
+    </header>
+    <nav class="navigation">
+        <a href="index.html" id="homeLink">Home</a>
+        <a href="profile.html" id="profileLink">Profile</a>
+        <a href="subscription.html" id="subscriptionLink">Subscription</a>
+    </nav>
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 60vh;">
+      <div class="modal-content" style="max-width: 500px; min-height: 450px; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0 auto;">
+        <form id="subscriptionForm" style="display: none; width: 100%;">
+          <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+            <label for="newspaper" style="margin-top: 10%; width: 86%; text-align: center;">Choose a newspaper:</label>
+            <select id="newspaper" style="margin-bottom: 12px;width: 86%; margin-right:50%;">
+              <option value="Times Of India">Times Of India</option>
+              <option value="Hindustan Times">Hindustan Times</option>
+              <option value="The Asian Age">The Asian Age</option>
+              <option value="The Hindu">The Hindu</option>
+              <option value="First India">First India</option>
+            </select>
+            <label for="plan" style="margin-top:20px; width: 86%; margin-right:50%;">Choose a subscription plan:</label>
+            <select id="plan" style="margin-bottom: 24px;width: 86%; margin-right:50%;">
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+              <option value="Yearly">Yearly</option>
+            </select>
+            <div style="height: 18px;"></div>
+            <button id="subbtn" type="submit" style="width: 86%; margin-right:50%;">Subscribe</button>
+          </div>
+        </form>
+        <form id="paymentForm" style="display: none; width: 100%; margin-top: 16px; text-align: center;">
+          <label for="paymentMethod" style="width: 86%; margin-right:20%;">Choose payment method:</label>
+          <select id="paymentMethod" required style="margin-bottom: 12px; width: 86%; margin-right:50%; display: block;">
+            <option value="">Select</option>
+            <option value="UPI">UPI</option>
+            <option value="Card">Card</option>
+          </select>
+          <div id="paymentDetails"></div>
+          <button type="submit" style="margin-top: 18px; width: 86%; margin-right:50%; display: block;">Confirm Payment</button>
+        </form>
+        <div id="subscriptionMessage" class="messageDiv" style="display: none; text-align:center; margin-bottom: 24px;"></div>
+        <div class="profile-info" style="text-align: center; margin-top: 32px; width: 100%;">
+          <p id="subscriptionInfo" style="display:none;"></p>
+        </div>
+      </div>
+    </div>
+    <footer class="footer">
+        <p>&copy; 2024 Online Newspaper Delivery System. All rights reserved.</p>
+        <p><b>Contact us at: support@newspaperdelivery.com</b></p>
+    </footer>
+</body>
+</html> 

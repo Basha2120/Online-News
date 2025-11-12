@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Newspaper Delivery Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="module" src="scripts.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="title">Online Newspaper Delivery System</div>
+        <div class="auth-buttons">
+            <!-- Buttons aligned to the top right -->
+            <div class="button-container">
+                <button id="openSignUp" class="auth-button">Sign Up</button>
+                <button id="openSignIn" class="auth-button">Sign In</button>
+                <button id="signOut" class="auth-button" style="display: none;">Sign Out</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sign Up Container -->
+    <div class="modal" id="signup" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button" id="closeSignUp">&times;</span>
+            <h1 class="form-title">Register</h1>
+            <form method="post" action="">
+                <div id="signUpMessage" class="messageDiv" style="display:none;"></div>
+                <div class="input-group">
+                    First Name
+                    <input type="text" id="fName" placeholder="First Name" required>
+                    
+                </div>
+                <div class="input-group">
+                    Last Name
+                    <input type="text" id="lName" placeholder="Last Name" required>
+                    
+                </div>
+                <div class="input-group">
+                    Email
+                    <input type="email" id="rEmail" required>
+                    
+                </div>
+                <div class="input-group">
+                    Password
+                    <input type="password" id="rPassword" required>
+                    
+                </div>
+                <button class="btn" id="submitSignUp">Sign Up</button>
+            </form>
+            <p class="or">----------or--------</p>
+            <div class="links">
+                <p>Already Have Account?</p>
+                <button id="signInButton">Sign In</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign In Container -->
+    <div class="modal" id="signIn" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button" id="closeSignIn">&times;</span>
+            <h1 class="form-title">Sign In</h1>
+            <form method="post" action="">
+                <div id="signInMessage" class="messageDiv" style="display:none;"></div>
+                <div class="input-group">
+                    
+                    Email
+                    <input type="email" id="email" required>
+                    
+                </div>
+                <div class="input-group">
+                    
+                    Password
+                    <input type="password" id="password" required>
+                    
+                </div>
+                <button class="btn" id="submitSignIn">Sign In</button>
+            </form>
+            <p class="or">----------or--------</p>
+            <div class="links">
+                <p>Don't have account yet?</p>
+                <button id="signUpButton">Sign Up</button>
+            </div>
+        </div>
+    </div>
+    <!-- Navigation Page -->
+    <nav class="navigation">
+        <a href="#" id="homeLink">Home</a>
+        <a href="profile.html" id="profileLink">Profile</a>
+        <a href="subscription.html" id="subscriptionLink">Subscription</a>
+    </nav>
+
+    <div id="homeContent" class="page-content">
+        <div class="newspaper">
+            <img src="image1.png" alt="Newspaper 1">
+            <p>Times Of India</p>
+        </div>
+        <div class="newspaper">
+            <img src="image2.jpeg" alt="Newspaper 2">
+            <p>Hindustan Times</p>
+        </div>
+        <div class="newspaper">
+            <img src="image3.png" alt="Newspaper 3">
+            <p>The Asian Age</p>
+        </div>
+        <div class="newspaper">
+            <img src="image4.jpg" alt="Newspaper 4">
+            <p>The Hindu</p>
+        </div>
+        <div class="newspaper">
+            <img src="image5.jpeg" alt="Newspaper 5">
+            <p>First India</p>
+        </div>   
+    </div>
+
+    <div id="welcomeMessageContainer">
+        <p id="welcomeMessage"></p>
+    </div>
+    <footer class="footer">
+        <p>&copy; 2024 Online Newspaper Delivery System. All rights reserved.</p>
+        <p><b>Contact us at: support@newspaperdelivery.com</b></p>
+    </footer>
+    
+</body>
+</html> 
