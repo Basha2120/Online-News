@@ -2,13 +2,13 @@
 
 A full-stack SaaS application for digital newspaper subscriptions and downloads. Users can sign up, choose a subscription plan (Weekly/Monthly), and download the latest editions of various English and Tamil newspapers.
 
-## 🚀 Live Demo
+## Live Demo
 **Frontend:** [https://online-news-frontend.vercel.app/](https://online-news-frontend.vercel.app/)  
 **Backend:** [https://online-news-backend.onrender.com](https://online-news-backend.onrender.com)
 
 ---
 
-## ✨ Features
+## Features
 - **User Authentication**: Secure Sign Up and Sign In system using JWT (JSON Web Tokens) and bcrypt password hashing.
 - **Subscription Management**: 
   - Integrated demo subscription activation (Weekly and Monthly plans).
@@ -25,7 +25,7 @@ A full-stack SaaS application for digital newspaper subscriptions and downloads.
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 - **Frontend**: Vanilla HTML5, CSS3 (Modern Flexbox/Grid), JavaScript (ES6 Modules).
 - **Backend**: Node.js, Express.js.
 - **Database**: MongoDB Atlas (Cloud).
@@ -38,7 +38,7 @@ A full-stack SaaS application for digital newspaper subscriptions and downloads.
 
 ---
 
-## 💻 Local Setup
+## Local Setup
 
 1. **Clone the repository**:
    ```bash
@@ -72,7 +72,7 @@ A full-stack SaaS application for digital newspaper subscriptions and downloads.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 ```text
 ├── js/
 │   ├── core/       # API and Auth utilities
@@ -91,8 +91,10 @@ A full-stack SaaS application for digital newspaper subscriptions and downloads.
 
 ---
 
-## 🛡️ License
-Distributed under the ISC License.
 
-## 👥 Authors
-- **Basha Bhai** - *Initial Work*
+## 👥 Author
+
+Basharathullah M 
+
+Final Year CSE Student | Java Developer
+
