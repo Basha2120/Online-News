@@ -1,162 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subscription - Online Newspaper Delivery System</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script type="module">
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-    import firebaseConfig from './firebaseConfig.js';
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Subscription – Online Newspaper</title>
 
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    let currentUser = null;
-    let userData = null;
-
-    function showSubscriptionInfo() {
-      if (userData && userData.subscription) {
-        document.getElementById('subscriptionInfo').innerText = `Newspaper: ${userData.subscription.newspaper}\nPlan: ${userData.subscription.plan}`;
-        document.getElementById('subscriptionInfo').style.display = 'block';
-      } else {
-        document.getElementById('subscriptionInfo').innerText = 'No subscription yet.';
-        document.getElementById('subscriptionInfo').style.display = 'block';
-      }
-    }
-
-    // Hide content until auth state is known
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelector('.modal-content').style.display = 'none';
-      document.querySelector('.auth-buttons').style.display = 'none';
-    });
-
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = 'index.html';
-        return;
-      }
-      currentUser = user;
-      document.querySelector('.modal-content').style.display = 'block';
-      document.querySelector('.auth-buttons').style.display = 'block';
-      document.getElementById('signOut').style.display = 'block';
-      const docSnap = await getDoc(doc(db, "users", user.uid));
-      if (docSnap.exists()) {
-        userData = docSnap.data();
-        showSubscriptionInfo();
-      }
-      document.getElementById('subscriptionForm').style.display = 'block';
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('signOut').addEventListener('click', () => {
-        signOut(auth).then(() => {
-          window.location.href = 'index.html';
-        });
-      });
-      document.getElementById('subscriptionForm').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        // Show payment form after subscription selection
-        document.getElementById('subscriptionForm').style.display = 'none';
-        document.getElementById('paymentForm').style.display = 'block';
-      });
-      document.getElementById('paymentMethod').addEventListener('change', (event) => {
-        const paymentMethod = event.target.value;
-        const paymentDetails = document.getElementById('paymentDetails');
-        paymentDetails.innerHTML = '';
-        if (paymentMethod === 'UPI') {
-          paymentDetails.innerHTML = `
-            <input type='text' id='upiId' required placeholder='UPI ID' style='width: 86%; margin-right:50%; display: block; box-sizing: border-box; text-align: center;'>
-          `;
-        } else if (paymentMethod === 'Card') {
-          paymentDetails.innerHTML = `
-            <input type='text' id='cardNumber' required placeholder='Card Number' style='width: 86%; margin-right:50%;; display: block; box-sizing: border-box; text-align: center;'>
-            <input type='text' id='expiryDate' required placeholder='Expiry Date (MM/YY)' style='width: 86%; margin-right:50%; display: block; box-sizing: border-box; text-align: center;'>
-            <input type='text' id='cvv' required placeholder='CVV'  style='width: 86%; margin-right:50%; display: block; box-sizing: border-box; text-align: center;'>
-          `;
-        }
-      });
-      document.getElementById('paymentForm').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        // Optionally validate payment info here
-        // Update subscription in Firestore
-        const newspaper = document.getElementById('newspaper').value;
-        const plan = document.getElementById('plan').value;
-        await setDoc(doc(db, "users", currentUser.uid), {
-          ...userData,
-          subscription: { newspaper, plan }
-        }, { merge: true });
-        userData.subscription = { newspaper, plan };
-        showSubscriptionInfo();
-        document.getElementById('subscriptionMessage').innerText = 'Subscription updated successfully!';
-        document.getElementById('subscriptionMessage').style.display = 'block';
-        document.getElementById('paymentForm').style.display = 'none';
-        document.getElementById('subscriptionForm').style.display = 'block';
-      });
-    });
-    </script>
+  <!-- Subscription Script -->
+  <script type="module" src="./js/pages/subscription.js"></script>
 </head>
+
 <body>
-    <header class="header">
-        <div class="title">Online Newspaper Delivery System</div>
-        <div class="auth-buttons">
-            <div class="button-container">
-                <button id="signOut" class="auth-button" style="display: none;">Sign Out</button>
-            </div>
-        </div>
-    </header>
-    <nav class="navigation">
-        <a href="index.html" id="homeLink">Home</a>
-        <a href="profile.html" id="profileLink">Profile</a>
-        <a href="subscription.html" id="subscriptionLink">Subscription</a>
-    </nav>
-    <div style="display: flex; justify-content: center; align-items: center; min-height: 60vh;">
-      <div class="modal-content" style="max-width: 500px; min-height: 450px; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0 auto;">
-        <form id="subscriptionForm" style="display: none; width: 100%;">
-          <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
-            <label for="newspaper" style="margin-top: 10%; width: 86%; text-align: center;">Choose a newspaper:</label>
-            <select id="newspaper" style="margin-bottom: 12px;width: 86%; margin-right:50%;">
-              <option value="Times Of India">Times Of India</option>
-              <option value="Hindustan Times">Hindustan Times</option>
-              <option value="The Asian Age">The Asian Age</option>
-              <option value="The Hindu">The Hindu</option>
-              <option value="First India">First India</option>
-            </select>
-            <label for="plan" style="margin-top:20px; width: 86%; margin-right:50%;">Choose a subscription plan:</label>
-            <select id="plan" style="margin-bottom: 24px;width: 86%; margin-right:50%;">
-              <option value="Weekly">Weekly</option>
-              <option value="Monthly">Monthly</option>
-              <option value="Yearly">Yearly</option>
-            </select>
-            <div style="height: 18px;"></div>
-            <button id="subbtn" type="submit" style="width: 86%; margin-right:50%;">Subscribe</button>
-          </div>
-        </form>
-        <form id="paymentForm" style="display: none; width: 100%; margin-top: 16px; text-align: center;">
-          <label for="paymentMethod" style="width: 86%; margin-right:20%;">Choose payment method:</label>
-          <select id="paymentMethod" required style="margin-bottom: 12px; width: 86%; margin-right:50%; display: block;">
-            <option value="">Select</option>
-            <option value="UPI">UPI</option>
-            <option value="Card">Card</option>
-          </select>
-          <div id="paymentDetails"></div>
-          <button type="submit" style="margin-top: 18px; width: 86%; margin-right:50%; display: block;">Confirm Payment</button>
-        </form>
-        <div id="subscriptionMessage" class="messageDiv" style="display: none; text-align:center; margin-bottom: 24px;"></div>
-        <div class="profile-info" style="text-align: center; margin-top: 32px; width: 100%;">
-          <p id="subscriptionInfo" style="display:none;"></p>
-        </div>
+
+  <!-- ================= HEADER ================= -->
+  <header class="app-header">
+    <div class="header-container">
+
+      <!-- Brand -->
+      <div class="brand">
+        <span class="brand-logo">📰</span>
+        <span class="brand-name">Online Newspaper</span>
       </div>
+
+      <!-- Navigation -->
+      <div class="nav-overlay" id="navOverlay"></div>
+
+      <nav class="side-drawer" id="sideDrawer">
+        <!-- Drawer Header -->
+        <div class="drawer-header">
+          <div class="brand">
+            <span class="brand-logo">📰</span>
+            <div class="brand-text">
+              <span class="brand-name">Online News</span>
+              <span class="brand-tagline">Delivery System</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Section -->
+        <div id="drawerUserSection" class="drawer-user-card" style="display: none;">
+          <div class="drawer-avatar">
+            <i class="fa fa-user"></i>
+          </div>
+          <div class="drawer-user-info">
+            <span id="drawerUserName" class="user-name">Loading...</span>
+            <span id="drawerUserRole" class="user-role">User</span>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="drawer-nav-links">
+          <a href="index.html" class="nav-link" data-page="home">
+            <i class="fa fa-home"></i> Home
+          </a>
+          <a href="profile.html" class="nav-link" data-page="profile">
+            <i class="fa fa-user-circle"></i> Profile
+          </a>
+          <a href="subscription.html" class="nav-link" data-page="subscription">
+            <i class="fa fa-credit-card"></i> Subscription
+          </a>
+          <a href="admin.html" class="nav-link" data-page="admin" style="display:none;">
+            <i class="fa fa-lock"></i> Admin
+          </a>
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="drawer-footer">
+          <button id="signOutDrawer" class="drawer-logout-btn" style="display:none;">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </div>
+      </nav>
+
+      <!-- Actions -->
+      <div class="header-actions">
+        <button id="signOut" class="btn btn-secondary" style="display:none;">
+          Sign Out
+        </button>
+      </div>
+
+      <!-- Hamburger Button -->
+      <button id="menuToggle" class="hamburger">
+        ☰
+      </button>
+
     </div>
-    <footer class="footer">
-        <p>&copy; 2024 Online Newspaper Delivery System. All rights reserved.</p>
-        <p><b>Contact us at: support@newspaperdelivery.com</b></p>
-    </footer>
+  </header>
+  <!-- ========================================== -->
+
+
+  <!-- ================= SUBSCRIPTION ================= -->
+  <main class="container">
+
+    <section class="subscription-header">
+      <h1>Choose Your Plan</h1>
+      <p class="muted-text">
+        Access premium newspapers with a simple subscription
+      </p>
+    </section>
+
+    <section class="plan-grid">
+
+      <!-- Weekly -->
+      <div class="card plan-card">
+        <h3>Weekly Plan</h3>
+        <p class="plan-price">₹10 <span>/ 7 days</span></p>
+        <ul class="plan-features">
+          <li><i class="fa fa-check"></i> All newspapers</li>
+          <li><i class="fa fa-check"></i> Unlimited downloads</li>
+          <li><i class="fa fa-check"></i> Cancel anytime</li>
+        </ul>
+        <button id="weeklyDemo" class="btn btn-primary">
+          Activate Weekly (Demo)
+        </button>
+        <p class="helper-text">Demo mode – no real payment</p>
+      </div>
+
+      <!-- Monthly -->
+      <div class="card plan-card featured">
+        <span class="plan-badge">Most Popular</span>
+        <h3>Monthly Plan</h3>
+        <p class="plan-price">₹30 <span>/ 30 days</span></p>
+        <ul class="plan-features">
+          <li><i class="fa fa-check"></i> All newspapers</li>
+          <li><i class="fa fa-check"></i> Unlimited downloads</li>
+          <li><i class="fa fa-check"></i> Priority access</li>
+        </ul>
+        <button id="monthlyDemo" class="btn btn-primary">
+          Activate Monthly (Demo)
+        </button>
+        <p class="helper-text">Demo mode – no real payment</p>
+      </div>
+
+    </section>
+
+    <div id="subscriptionMessage" class="messageDiv" style="display:none;"></div>
+
+    <section class="current-subscription">
+      <p id="subscriptionInfo" style="display:none;"></p>
+    </section>
+
+  </main>
+  <!-- =============================================== -->
+
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+    <p>&copy; 2024 Online Newspaper Delivery System</p>
+    <p><strong>Contact:</strong> support@newspaperdelivery.com</p>
+  </footer>
+  <!-- =========================================== -->
+
+
+  <!-- ===== Active Nav Highlight ===== -->
+  <script>
+    const pageMap = {
+      "index.html": "home",
+      "profile.html": "profile",
+      "subscription.html": "subscription",
+      "admin.html": "admin"
+    };
+
+    const current = pageMap[location.pathname.split("/").pop()];
+    document.querySelectorAll(".nav-link").forEach(link => {
+      if (link.dataset.page === current) {
+        link.classList.add("active");
+      }
+    });
+
+    document.querySelectorAll(".plan-card").forEach(card => {
+      card.addEventListener("click", () => {
+        document.querySelectorAll(".plan-card")
+          .forEach(c => c.classList.remove("active"));
+        card.classList.add("active");
+      });
+    });
+  </script>
+
 </body>
-</html> 
+
+</html>

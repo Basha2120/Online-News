@@ -4,15 +4,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Profile – Online Newspaper</title>
+  <title>Admin Dashboard – Online Newspaper</title>
 
   <!-- Styles -->
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-  <!-- Profile Script -->
-  <script type="module" src="./js/pages/profile.js"></script>
-
+  <!-- Admin Script -->
+  <script type="module" src="./js/pages/admin.js"></script>
 </head>
 
 <body>
@@ -55,16 +53,7 @@
 
         <!-- Navigation Links -->
         <div class="drawer-nav-links">
-          <a href="index.html" class="nav-link" data-page="home">
-            <i class="fa fa-home"></i> Home
-          </a>
-          <a href="profile.html" class="nav-link" data-page="profile">
-            <i class="fa fa-user-circle"></i> Profile
-          </a>
-          <a href="subscription.html" class="nav-link" data-page="subscription">
-            <i class="fa fa-credit-card"></i> Subscription
-          </a>
-          <a href="admin.html" class="nav-link" data-page="admin" style="display:none;">
+          <a href="admin.html" class="nav-link" data-page="admin">
             <i class="fa fa-lock"></i> Admin
           </a>
         </div>
@@ -94,29 +83,41 @@
   <!-- ========================================== -->
 
 
-  <!-- ================= PROFILE ================= -->
-  <main class="centered">
+  <!-- ================= ADMIN ================= -->
+  <main class="container">
 
-    <div class="card profile-card">
+    <!-- ===== Admin Dashboard ===== -->
+    <section id="adminDashboard" style="display:block;">
 
-      <!-- Avatar -->
-      <div class="profile-avatar">
-        <i class="fa fa-user"></i>
+      <!-- Metrics -->
+      <div class="dashboard-metrics">
+        <div class="card metric-card">
+          <h4>Total Revenue</h4>
+          <p id="revenueTotal" class="metric-value">₹0</p>
+        </div>
       </div>
 
-      <!-- Info -->
-      <h2 id="profileName">Loading…</h2>
-      <p id="profileEmail" class="muted-text"></p>
+      <!-- Users Table -->
+      <div class="card">
+        <h3>User Subscriptions</h3>
 
-      <div class="profile-divider"></div>
+        <div class="table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Plan</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="adminUserRows"></tbody>
+          </table>
+        </div>
+      </div>
 
-      <p id="profileSubscription" class="profile-subscription"></p>
-
-      <a href="subscription.html" class="btn btn-primary profile-action">
-        Manage Subscription
-      </a>
-
-    </div>
+    </section>
 
   </main>
   <!-- =========================================== -->
@@ -128,24 +129,6 @@
     <p><strong>Contact:</strong> support@newspaperdelivery.com</p>
   </footer>
   <!-- =========================================== -->
-
-
-  <!-- ===== Active Nav Highlight ===== -->
-  <script>
-    const pageMap = {
-      "index.html": "home",
-      "profile.html": "profile",
-      "subscription.html": "subscription",
-      "admin.html": "admin"
-    };
-
-    const current = pageMap[location.pathname.split("/").pop()];
-    document.querySelectorAll(".nav-link").forEach(link => {
-      if (link.dataset.page === current) {
-        link.classList.add("active");
-      }
-    });
-  </script>
 
 </body>
 

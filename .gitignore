@@ -1,15 +1,28 @@
-# Node modules (if backend used)
-node_modules/
-
-# Firebase credentials
-firebaseConfig.js
-
-# Environment files
+# Security & Environment
 .env
+.env.test
 .env.local
 
-# OS / IDE files
-.DS_Store
-Thumbs.db
+# Dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Editor/OS Files
 .vscode/
 .idea/
+.DS_Store
+Thumbs.db
+
+# Downloads/Temp Files
+server/downloads/**/*.pdf
+tmp/
+
+# Build/Dist
+dist/
+build/
